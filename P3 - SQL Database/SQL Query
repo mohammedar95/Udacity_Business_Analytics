@@ -1,0 +1,67 @@
+1-  What are the top 10 cities of selling albums in all year?
+
+SELECT strftime('%Y', InvoiceDate) AS Dates, SUM(i.total) AS TotalB, i.BillingCity City
+FROM Invoice i
+JOIN InvoiceLine l
+ON i.InvoiceId = l.InvoiceId
+JOIN Track t
+ON t.TrackId = l.TrackId
+JOIN Album b
+ON b.AlbumId = t.AlbumId
+GROUP BY InvoiceDate, City
+ORDER BY TotalB DESC
+LIMIT 10
+
+
+
+2-   What is the monthly sales of “Rock” Tracks in 2013
+WITH totals AS (
+SELECT i.total, i.InvoiceId, strftime('%Y-%m',i.InvoiceDate) AS dates, g.name AS Genre
+FROM Invoice i
+JOIN InvoiceLine l
+ON i.InvoiceId = l.InvoiceId
+JOIN Track t
+ON t.TrackId = l.TrackId
+JOIN Genre g
+ON t.GenreId = g.GenreId
+Where genre IS 'Rock'
+GROUP by InvoiceDate
+order by dates )
+
+SELECT  sum(total), dates, genre
+FROM totals
+WHERE dates BETWEEN '2013-01' AND '2013-12'
+GROUP BY dates
+
+
+
+q-3 officefans
+
+
+WITH officeFans AS (
+SELECT c.FirstName AS FirstName, t.name AS Songs, b.title AS Albums, l.UnitPrice
+FROM Customer c
+JOIN Invoice i
+On c.CustomerId = i.CustomerId
+JOIN InvoiceLine l
+ON i.InvoiceId = l.InvoiceId
+JOIN Track t
+ON l.TrackId = t.TrackId
+JOiN Album b
+ON t.AlbumId = b.AlbumId
+WHERE Albums LIKE 'The Office%'
+ORDER BY 3)
+
+SELECT Albums, SUM(UnitPrice)
+FROM officeFans
+GROUP BY Albums
+
+
+
+q-4 Songs per Genre
+SELECT count(t.Name) Songs, g.name As Genres
+FROM Track t
+JOIN Genre g
+on t.GenreId = g.GenreId
+GROUP BY 2
+ORDER BY songs DESC
